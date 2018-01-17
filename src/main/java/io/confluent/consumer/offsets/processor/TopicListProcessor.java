@@ -26,7 +26,7 @@ public class TopicListProcessor implements Processor<GroupTopicPartition, Long> 
       LOG.warn(group);
     }
 
-    LOG.warn("Topics:");
+    LOG.warn("Topic:");
     for (String topic : this.topicGroup.keySet()) {
       LOG.warn(topic);
     }
