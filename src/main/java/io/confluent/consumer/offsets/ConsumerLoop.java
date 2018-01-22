@@ -70,12 +70,12 @@ public class ConsumerLoop<IK, IV, OK, OV> implements Runnable {
       subscribe();
       initIdleState();
       while (true) {
-        LOG.debug("Poll start");
+//        LOG.debug("Poll start");
 
         ConsumerRecords<IK, IV> consumerRecords = this.consumer.poll(this.pollTimeoutMs);
-        LOG.debug("Number of records is {}", consumerRecords.count());
+//        LOG.debug("Number of records is {}", consumerRecords.count());
         List<Map.Entry<OK, OV>> convertedRecords = convert(consumerRecords);
-        LOG.debug("Number of records after conversion: {}", convertedRecords.size());
+//        LOG.debug("Number of records after conversion: {}", convertedRecords.size());
         int processed = process(convertedRecords);
 
         postponeIdelState(processed);
@@ -83,8 +83,8 @@ public class ConsumerLoop<IK, IV, OK, OV> implements Runnable {
         this.totalProcessed.addAndGet(processed);
         this.totalIgnored.addAndGet(consumerRecords.count() - processed);
 
-        LOG.debug("Poll end (total ignored: {}, total processed: {})", this.totalIgnored.get(),
-            this.totalProcessed.get());
+//        LOG.debug("Poll end (total ignored: {}, total processed: {})", this.totalIgnored.get(),
+//            this.totalProcessed.get());
       }
     } catch (WakeupException e) {
       LOG.debug("Exiting main loop");
@@ -143,17 +143,12 @@ public class ConsumerLoop<IK, IV, OK, OV> implements Runnable {
     int ignored = 0;
     for (Map.Entry<OK, OV> entry : entries) {
       try {
-        if (this.blacklist.shouldIgnore(entry.getKey(), entry.getValue())) {
-          ignored++;
-        } else {
-          this.processor.process(entry.getKey(), entry.getValue());
-        }
+        this.processor.process(entry.getKey(), entry.getValue());
       } catch (Exception e) {
         LOG.error("Error while processing entry" + entry, e);
         ignored++;
       }
     }
-    LOG.debug("{} records were ignored", ignored);
     return entries.size() - ignored;
   }
 
